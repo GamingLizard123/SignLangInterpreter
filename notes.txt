@@ -1,0 +1,5 @@
+
+GOALS:
+-- Create a database where your hand signs are stored
+-- Create algorithm that will compare the hashes to your database
+-- Make threading in your project 1 for front end camera 1 for algorithm
