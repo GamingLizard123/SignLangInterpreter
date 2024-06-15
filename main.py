@@ -5,7 +5,8 @@ import algorithm
 
 
 def main():
-    
+    ht.runTracker()
+    """
     thread1 = threading.Thread(target=ht.runTracker)
     thread2 = threading.Thread(target=algorithm.run)
 
@@ -13,7 +14,7 @@ def main():
     thread2.start()
 
     thread1.join()
-    thread2.join()
+    thread2.join()"""
 
 
 main()

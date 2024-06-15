@@ -1,5 +1,7 @@
 import cv2
 import mediapipe as mp
+import algorithm
+
 
 # Example function to map landmarks to different numbers based on handedness
 def map_landmark_index(idx, handedness):
@@ -59,13 +61,25 @@ def map_landmark_index(idx, handedness):
         return -1  # Handle cases where handedness is not recognized
 
 def printPositions(hand_landmarks, handedness):
+    
+    data = []
+
+   
     if hand_landmarks:
         for idx, landmark in enumerate(hand_landmarks.landmark):
             mapped_idx = map_landmark_index(idx, handedness)
             if mapped_idx != -1:
-                print(f"{handedness} hand - Index {mapped_idx}: ({landmark.x}, {landmark.y}, {landmark.z})")
+                
+                data.append((mapped_idx, landmark.x, landmark.y, landmark.z))
+                #sprint(f"{handedness} hand - Index {mapped_idx}: ({landmark.x}, {landmark.y}, {landmark.z})")
+    
+    algorithm.run(data)
+    
+    
+        
 
 def runTracker():        
+
     # Initialize MediaPipe Hands
     mp_hands = mp.solutions.hands
     hands = mp_hands.Hands()
@@ -78,6 +92,8 @@ def runTracker():
         ret, frame = cap.read()
         if not ret:
             break
+        
+        
 
         # Flip the frame horizontally for a later selfie-view display
         frame = cv2.flip(frame, 1)
@@ -110,10 +126,9 @@ def runTracker():
         cv2.imshow('Hand Tracker', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
+            
             break
 
     # Release the webcam and close windows
     cap.release()
     cv2.destroyAllWindows()
-
-runTracker()
