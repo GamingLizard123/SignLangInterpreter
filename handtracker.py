@@ -3,6 +3,9 @@ import mediapipe as mp
 import algorithm
 
 
+success = 0
+fail = 0
+
 # Example function to map landmarks to different numbers based on handedness
 def map_landmark_index(idx, handedness):
     if handedness == 'Left':
@@ -60,20 +63,27 @@ def map_landmark_index(idx, handedness):
     else:
         return -1  # Handle cases where handedness is not recognized
 
-def printPositions(hand_landmarks, handedness):
+def printPositions(hand_landmarks, handedness, frame):
     
     data = []
-
+    h, w, _ = frame.shape
    
     if hand_landmarks:
         for idx, landmark in enumerate(hand_landmarks.landmark):
             mapped_idx = map_landmark_index(idx, handedness)
             if mapped_idx != -1:
                 
-                data.append((mapped_idx, landmark.x, landmark.y, landmark.z))
+                data.append((mapped_idx, landmark.x * w , landmark.y * h , landmark.z))
                 #sprint(f"{handedness} hand - Index {mapped_idx}: ({landmark.x}, {landmark.y}, {landmark.z})")
     
-    algorithm.run(data)
+    returned = algorithm.hashpositions(data)
+    
+    """
+    if returned == 0:
+        success +=1
+    else:
+        fail += 1"""
+
     
     
         
@@ -113,7 +123,7 @@ def runTracker():
                     handedness = 'Unknown'
 
                 mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-                printPositions(hand_landmarks, handedness)
+                printPositions(hand_landmarks, handedness, frame)
 
                 # Draw the landmarks with their indices
                 for idx, landmark in enumerate(hand_landmarks.landmark):
@@ -132,3 +142,8 @@ def runTracker():
     # Release the webcam and close windows
     cap.release()
     cv2.destroyAllWindows()
+
+    print("------------------------------------------------------------")
+    print(f"Success: {success}")
+    print(f"Failures: {fail}")
+    print(f"Percentile: {success/ (success + fail)}")
