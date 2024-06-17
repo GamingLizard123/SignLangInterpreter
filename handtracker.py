@@ -3,8 +3,7 @@ import mediapipe as mp
 import algorithm
 
 
-success = 0
-fail = 0
+libraryData = []
 
 # Example function to map landmarks to different numbers based on handedness
 def map_landmark_index(idx, handedness):
@@ -76,7 +75,7 @@ def printPositions(hand_landmarks, handedness, frame):
                 data.append((mapped_idx, landmark.x * w , landmark.y * h , landmark.z))
                 #sprint(f"{handedness} hand - Index {mapped_idx}: ({landmark.x}, {landmark.y}, {landmark.z})")
     
-    returned = algorithm.hashpositions(data)
+    returned = algorithm.findPositions(data, libraryData)
     
     """
     if returned == 0:
@@ -89,12 +88,15 @@ def printPositions(hand_landmarks, handedness, frame):
         
 
 def runTracker():        
-
+    global libraryData
+    
     # Initialize MediaPipe Hands
     mp_hands = mp.solutions.hands
     hands = mp_hands.Hands()
     mp_drawing = mp.solutions.drawing_utils
 
+    #initialize algorithm
+    libraryData = algorithm.initializeData(True)
     # Initialize webcam
     cap = cv2.VideoCapture(0)
 
