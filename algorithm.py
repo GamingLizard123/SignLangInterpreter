@@ -4,7 +4,7 @@ from shared_data import lock
 import csv
 import os
 
-threshold = 0.93
+threshold = 0.939
 dataFilename = './handData.csv'
 
 handLibraryData = []
