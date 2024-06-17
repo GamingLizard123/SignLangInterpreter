@@ -65,8 +65,15 @@ def findPositions(data, givenLibrary = None):
     #return/print the name of the index if it exists
     
     if index != None:
-        
+        os.system('cls')
         print(handLibraryData[index][0])
+        return handLibraryData[index][0]
+    else:
+        
+        os.system('cls')
+        print("No match")
+        return None
+        
 
 
 """loads data into python list and returns it if given input"""
