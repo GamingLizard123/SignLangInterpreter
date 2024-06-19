@@ -42,6 +42,18 @@ def findPositions(data, givenLibrary = None):
                     positionalArray.append(1)
                 else:
                     positionalArray.append(0)
+    #if it is only one hand
+    if len(positionalArray) == 840:
+        #get handedness
+        if data[0][0] == 21:
+            #right hand
+            positionalArray.append(0)
+            positionalArray.append(1)
+        elif data[0][0] == 0:
+            #left hand
+            positionalArray.append(1)
+            positionalArray.append(0)
+        
                 
 
     string = ''.join(str(i) for i in positionalArray)
@@ -101,12 +113,17 @@ def similarity(given, compare):
     #total
     total = len(given)
     
+    
     same = 0
     try:
         
         #print(len(given), len(compare))
         #if they are not of the same length terminate
-        if(len(given) != len(compare)):
+        #if they are not the same hand terminate
+        if(total != len(compare)):
+            return -1
+        
+        if given[total - 2] != compare[total - 2]:
             return -1
     except:
         print('error with similarity input variables')
