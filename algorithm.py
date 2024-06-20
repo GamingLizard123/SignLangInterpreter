@@ -1,6 +1,5 @@
 import keyboard
 import mediapipe as mp
-from shared_data import lock
 import csv
 import os
 
