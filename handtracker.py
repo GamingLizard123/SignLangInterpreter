@@ -141,6 +141,4 @@ def runTracker():
     cv2.destroyAllWindows()
 
     print("------------------------------------------------------------")
-    print(f"Success: {success}")
-    print(f"Failures: {fail}")
-    print(f"Percentile: {success/ (success + fail)}")
+  
