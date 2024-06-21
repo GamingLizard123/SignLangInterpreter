@@ -1,21 +1,22 @@
 import keyboard
 import mediapipe as mp
-from shared_data import lock
 import csv
 import os
 
 threshold = 0.939
+previous_frame_data = []
+momementBuffer = 3
 dataFilename = './handData.csv'
 
 handLibraryData = []
 
-def run(data):
-   
-   findPositions(data)
+"""input hand position data and optional list library for parsing, 
+    if none is given it will load from csv"""
 
-"""input hand position data and optional list library for parsing, if none is given it will load from csv"""
 def findPositions(data, givenLibrary = None):
-    global handLibraryData
+
+    global handLibraryData,previous_frame_data
+
     #check for library if not load
     if givenLibrary == None:
         initializeData()
@@ -42,6 +43,37 @@ def findPositions(data, givenLibrary = None):
                     positionalArray.append(1)
                 else:
                     positionalArray.append(0)
+    
+    #if there is data for the previous frame 
+    if previous_frame_data != []:
+        for i in range(len(data)):
+            #if the movement is less than the movement buffer then its 00
+            if abs(data[i][1]-previous_frame_data[i][1]) < momementBuffer:
+                positionalArray.append(0)
+                positionalArray.append(0)
+            #if the x-coordinate is greater then 10
+            elif data[i][1] > previous_frame_data[i][1] and abs(data[i][1]-previous_frame_data[i][1]) > momementBuffer:
+                positionalArray.append(1)
+                positionalArray.append(0)
+            #if position is less then 01
+            elif data[i][1] < previous_frame_data[i][1] and abs(data[i][1]-previous_frame_data[i][1]) > momementBuffer:
+                positionalArray.append(0)
+                positionalArray.append(1) 
+
+             #if the movement is less than the movement buffer then its 00
+            if abs(data[i][2]-previous_frame_data[i][2]) < momementBuffer:
+                positionalArray.append(0)
+                positionalArray.append(0)
+            #if the y-coordinate is greater then 10
+            elif data[i][2] > previous_frame_data[i][2] and abs(data[i][2]-previous_frame_data[i][2]) > momementBuffer:
+                positionalArray.append(1)
+                positionalArray.append(0)
+            #if position is less then 01
+            elif data[i][2] < previous_frame_data[i][2] and abs(data[i][2]-previous_frame_data[i][2]) > momementBuffer:
+                positionalArray.append(0)
+                positionalArray.append(1)    
+            
+    
     #if it is only one hand
     if len(positionalArray) == 840:
         #get handedness
@@ -58,7 +90,7 @@ def findPositions(data, givenLibrary = None):
 
     string = ''.join(str(i) for i in positionalArray)
     
-    #print(string, end="\n\n")
+    print(string, end="\n\n")
     
     
     maxLikeness = 0
@@ -74,15 +106,18 @@ def findPositions(data, givenLibrary = None):
             #if its greater than the likeness then add the index
             if similarityVal > maxLikeness:
                 index = i
+
+    #replace previous frame data
+    previous_frame_data = data
+
     #return/print the name of the index if it exists
-    
     if index != None:
-        os.system('cls')
+        #os.system('cls')
         print(handLibraryData[index][0])
         return handLibraryData[index][0]
     else:
         
-        os.system('cls')
+        #os.system('cls')
         print("No match")
         return None
         
