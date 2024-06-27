@@ -2,11 +2,15 @@ import keyboard
 import mediapipe as mp
 import csv
 import os
+import dataRetriever as dr
 
 threshold = 0.939
 previous_frame_data = []
 momementBuffer = 3
 dataFilename = './handData.csv'
+
+record_output_file = './output.txt'
+record = False
 
 handLibraryData = []
 
@@ -15,7 +19,7 @@ handLibraryData = []
 
 def findPositions(data, givenLibrary = None):
 
-    global handLibraryData,previous_frame_data
+    global handLibraryData,previous_frame_data,record
 
     #check for library if not load
     if givenLibrary == None:
@@ -73,6 +77,9 @@ def findPositions(data, givenLibrary = None):
                 positionalArray.append(0)
                 positionalArray.append(1)    
             
+        """if abs(data[8][2]-previous_frame_data[8][2]) > momementBuffer:
+            print(data[8][0])
+            print("movement")"""
     
     #if it is only one hand
     if len(positionalArray) == 840:
@@ -90,36 +97,38 @@ def findPositions(data, givenLibrary = None):
 
     string = ''.join(str(i) for i in positionalArray)
     
-    print(string, end="\n\n")
+    #print(string, end="\n\n")
     
     
-    maxLikeness = 0
-    index = None
-    #compare all data with library data
-    for i in range(len(handLibraryData)):
-        #find similarity
-        
-        similarityVal = similarity(string, str(handLibraryData[i][1]))
-        #print(f"comparing with {handLibraryData[i][0]} similarity: {similarityVal}")
-        
-        if  similarityVal > threshold:
-            #if its greater than the likeness then add the index
-            if similarityVal > maxLikeness:
-                index = i
-
-    #replace previous frame data
+    """index = index_through_similarity(string)
+    #replace previous frame data"""
     previous_frame_data = data
+    
+    
+    if keyboard.is_pressed ('r') and record == False:
+        print('recording- true')
+        record = True
+    elif keyboard.is_pressed('r') and record == True:
+        print('recording- false')
+        record = False
 
+    if record == True:
+        print('recorded')
+        record_string(string)
+
+    dr.findMovement(string)
+    
+    """
     #return/print the name of the index if it exists
     if index != None:
         #os.system('cls')
-        print(handLibraryData[index][0])
+        #print(handLibraryData[index][0])
         return handLibraryData[index][0]
     else:
         
         #os.system('cls')
-        print("No match")
-        return None
+        #print("No match")
+        return None"""
         
 
 
@@ -143,6 +152,14 @@ def initializeData(with_return = False):
         if with_return:
             return handLibraryData
 
+def record_string(string):
+    string += ','
+    try:
+        with open(record_output_file, "a") as f:
+            f.write(string)
+    except Exception as e:
+        print(e)
+
 """Return the similarity of two given strings in decimal """
 def similarity(given, compare):
     #total
@@ -152,7 +169,6 @@ def similarity(given, compare):
     same = 0
     try:
         
-        #print(len(given), len(compare))
         #if they are not of the same length terminate
         #if they are not the same hand terminate
         if(total != len(compare)):
@@ -171,3 +187,19 @@ def similarity(given, compare):
     
     #calculate percentage similarity and return
     return (same/total)
+
+def index_through_similarity(string):
+    maxLikeness = 0
+    index = None
+    #compare all data with library data
+    for i in range(len(handLibraryData)):
+        #find similarity
+        
+        similarityVal = similarity(string, str(handLibraryData[i][1]))
+        #print(f"comparing with {handLibraryData[i][0]} similarity: {similarityVal}")
+        
+        if  similarityVal > threshold:
+            #if its greater than the likeness then add the index
+            if similarityVal > maxLikeness:
+                index = i
+    return index
