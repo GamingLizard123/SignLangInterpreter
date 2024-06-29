@@ -4,7 +4,6 @@ import csv
 import os
 import dataRetriever as dr
 
-threshold = 0.939
 previous_frame_data = []
 momementBuffer = 3
 dataFilename = './handData.csv'

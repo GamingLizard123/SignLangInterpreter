@@ -38,16 +38,19 @@ def findMovement(inputString, optional_library = None):
     #else if there isnt't a movement index
     else:
         movementIndex = index_through_similarity(inputString)
-        try:
+        
+        """try:
             print(f"index: {movementIndex} | Similarity: {similarity(inputString, dataLibrary[movementIndex][0])}")
         except Exception as e:
-            print(f"Exception in find movement: {e}")
+            print(f"Exception in find movement: {e}")"""
 
         step += 1
             
             
 
 def index_through_similarity(inputString):
+    global dataLibrary
+
     maxLikeness = 0
     index = None
     #compare all data with library data
@@ -56,11 +59,12 @@ def index_through_similarity(inputString):
         
         similarityVal = similarity(inputString, str(dataLibrary[i][0]))
 
-        print(similarityVal, i)
         if  similarityVal > threshold:
+            print(similarityVal, i)
             #if its greater than the likeness then add the index
             if similarityVal > maxLikeness:
                 index = i
+    
     return index
 
 """Return the similarity of two given strings in decimal """
