@@ -2,16 +2,24 @@ import csv
 
 movementIndex = None
 step = 0
-threshold = 0.935
+threshold = 0.83#0.935
 
 dataLibrary = []
 
-def findMovement(inputString):
-    global movementIndex, step
+def findMovement(inputString, optional_library = None):
+    global movementIndex, step, dataLibrary
+
+    #if there is a library given use it, else use the datalibrary
+    if optional_library != None:
+        dataLibrary = optional_library
+    else:
+        if dataLibrary == []:
+            initialize()
+        
 
     #if there is a movement index 
     if movementIndex != None:
-        print("foo")
+        #print("foo")
         #TODO make the remaining step finding function
         similarity_of_movement = similarity(inputString, dataLibrary[movementIndex][step])
         if similarity_of_movement > threshold and len(dataLibrary[movementIndex])-1 > step:
@@ -33,7 +41,7 @@ def findMovement(inputString):
         try:
             print(f"index: {movementIndex} | Similarity: {similarity(inputString, dataLibrary[movementIndex][0])}")
         except Exception as e:
-            print(e)
+            print(f"Exception in find movement: {e}")
 
         step += 1
             
@@ -46,7 +54,8 @@ def index_through_similarity(inputString):
     for i in range(len(dataLibrary)):
         #find similarity
         
-        similarityVal = similarity(string, str(dataLibrary[i][0]))
+        similarityVal = similarity(inputString, str(dataLibrary[i][0]))
+
         print(similarityVal, i)
         if  similarityVal > threshold:
             #if its greater than the likeness then add the index
@@ -69,7 +78,7 @@ def similarity(given, compare):
             return -1
         
         if given[total - 2] != compare[total - 2]:
-            return -1
+            return -2
     except:
         print('error with similarity input variables')
         exit()
@@ -83,12 +92,15 @@ def similarity(given, compare):
     return (same/total)
 
 def initialize():
+    global dataLibrary
+    print("loading data...")
     try:
         with open("./data.csv", 'r') as f:
             csv_reader = csv.reader(f)
 
             for row in csv_reader:
                 dataLibrary.append(row)
-                
+        print("data loaded!")
+        return dataLibrary
     except Exception as e:
-        print(e)
+        print(f"data loading error in initialize, dataRetriever.py: {e}")

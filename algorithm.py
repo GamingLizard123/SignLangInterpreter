@@ -81,18 +81,18 @@ def findPositions(data, givenLibrary = None):
             print(data[8][0])
             print("movement")"""
     
-    #if it is only one hand
-    if len(positionalArray) == 840:
-        #get handedness
-        if data[0][0] == 21:
-            #right hand
-            positionalArray.append(0)
-            positionalArray.append(1)
-        elif data[0][0] == 0:
-            #left hand
-            positionalArray.append(1)
-            positionalArray.append(0)
-        
+
+
+    #get handedness
+    if data[0][0] == 21:
+        #right hand
+        positionalArray.append(0)
+        positionalArray.append(1)
+    elif data[0][0] == 0:
+        #left hand
+        positionalArray.append(1)
+        positionalArray.append(0)
+    
                 
 
     string = ''.join(str(i) for i in positionalArray)
@@ -100,8 +100,7 @@ def findPositions(data, givenLibrary = None):
     #print(string, end="\n\n")
     
     
-    """index = index_through_similarity(string)
-    #replace previous frame data"""
+    #replace frame data
     previous_frame_data = data
     
     
@@ -116,19 +115,10 @@ def findPositions(data, givenLibrary = None):
         print('recorded')
         record_string(string)
 
+    #find movement
     dr.findMovement(string)
     
-    """
-    #return/print the name of the index if it exists
-    if index != None:
-        #os.system('cls')
-        #print(handLibraryData[index][0])
-        return handLibraryData[index][0]
-    else:
-        
-        #os.system('cls')
-        #print("No match")
-        return None"""
+   
         
 
 
@@ -137,14 +127,7 @@ def initializeData(with_return = False):
     
     #read through csv and put it in a list
     try:
-        with open(dataFilename, 'r') as f:
-            csv_reader = csv.reader(f)
-            #iterate through every row
-            print("loading data...")
-            for row in csv_reader:
-                handLibraryData.append(row)
-            print('data loaded')
-        handLibraryData.pop(0)
+        dr.initialize()
     except:
         print("failed to load data")
         exit()
@@ -159,47 +142,3 @@ def record_string(string):
             f.write(string)
     except Exception as e:
         print(e)
-
-"""Return the similarity of two given strings in decimal """
-def similarity(given, compare):
-    #total
-    total = len(given)
-    
-    
-    same = 0
-    try:
-        
-        #if they are not of the same length terminate
-        #if they are not the same hand terminate
-        if(total != len(compare)):
-            return -1
-        
-        if given[total - 2] != compare[total - 2]:
-            return -1
-    except:
-        print('error with similarity input variables')
-        exit()
-    
-    #compare and add to same counter
-    for i in range(len(given)):
-        if given[i] == compare[i]:
-            same += 1
-    
-    #calculate percentage similarity and return
-    return (same/total)
-
-def index_through_similarity(string):
-    maxLikeness = 0
-    index = None
-    #compare all data with library data
-    for i in range(len(handLibraryData)):
-        #find similarity
-        
-        similarityVal = similarity(string, str(handLibraryData[i][1]))
-        #print(f"comparing with {handLibraryData[i][0]} similarity: {similarityVal}")
-        
-        if  similarityVal > threshold:
-            #if its greater than the likeness then add the index
-            if similarityVal > maxLikeness:
-                index = i
-    return index

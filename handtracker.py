@@ -73,7 +73,7 @@ def printPositions(hand_landmarks, handedness, frame):
             if mapped_idx != -1:
                 
                 data.append((mapped_idx, landmark.x * w , landmark.y * h , landmark.z))
-                #sprint(f"{handedness} hand - Index {mapped_idx}: ({landmark.x}, {landmark.y}, {landmark.z})")
+                
     
     algorithm.findPositions(data, libraryData)  
     
