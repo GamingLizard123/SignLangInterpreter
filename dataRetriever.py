@@ -2,7 +2,8 @@ import csv
 
 movementIndex = None
 step = 0
-threshold = 0.83#0.935
+start_threshold = 0.935
+threshold = 0.8
 
 dataLibrary = []
 
@@ -18,17 +19,21 @@ def findMovement(inputString, optional_library = None):
         
 
     #if there is a movement index 
-    if movementIndex != None:
-        #print("foo")
-        #TODO make the remaining step finding function
+    if movementIndex != None and step != 0:
+
+
         similarity_of_movement = similarity(inputString, dataLibrary[movementIndex][step])
+
         if similarity_of_movement > threshold and len(dataLibrary[movementIndex])-1 > step:
-            step += 1
-            #if its at the last step
-            if len(dataLibrary[movementIndex])-1 == step:
-                #print movement name
+
+            print(step)
+
+            if len(dataLibrary[movementIndex])-1 != step:
+
+                step += 1
+            else:
+                
                 print(dataLibrary[movementIndex][step])
-                #reset
                 step = 0
                 movementIndex = None
         else:
@@ -59,7 +64,7 @@ def index_through_similarity(inputString):
         
         similarityVal = similarity(inputString, str(dataLibrary[i][0]))
 
-        if  similarityVal > threshold:
+        if  similarityVal > start_threshold:
             print(similarityVal, i)
             #if its greater than the likeness then add the index
             if similarityVal > maxLikeness:
