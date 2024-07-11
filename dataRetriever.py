@@ -9,68 +9,70 @@ dataLibrary = []
 
 def findMovement(inputString, optional_library = None):
     global movementIndex, step, dataLibrary
+    try:
+        #if there is a library given use it, else use the datalibrary
+        if optional_library != None:
+            dataLibrary = optional_library
+        else:
+            if dataLibrary == []:
+                initialize()
+            
 
-    #if there is a library given use it, else use the datalibrary
-    if optional_library != None:
-        dataLibrary = optional_library
-    else:
-        if dataLibrary == []:
-            initialize()
-        
-
-    #if there is a movement index 
-    if movementIndex != None and step != 0:
+        #if there is a movement index 
+        if movementIndex != None and step != 0:
 
 
-        similarity_of_movement = similarity(inputString, dataLibrary[movementIndex][step])
+            similarity_of_movement = similarity(inputString, dataLibrary[movementIndex][step])
 
-        if similarity_of_movement > threshold and len(dataLibrary[movementIndex])-1 > step:
-
-            print(step)
-
-            if len(dataLibrary[movementIndex])-1 != step:
-
-                step += 1
-            else:
+            if similarity_of_movement > threshold and len(dataLibrary[movementIndex])-1 > step:
                 
-                print(dataLibrary[movementIndex][step])
+
+
+                if len(dataLibrary[movementIndex])-1 != step:
+
+                    step += 1
+                    
+                else:
+
+                    print(dataLibrary[movementIndex][step])
+                    step = 0
+                    movementIndex = None
+            else:
                 step = 0
                 movementIndex = None
-        else:
-            step = 0
-            movementIndex = None
-    
-    #else if there isnt't a movement index
-    else:
-        movementIndex = index_through_similarity(inputString)
         
-        """try:
-            print(f"index: {movementIndex} | Similarity: {similarity(inputString, dataLibrary[movementIndex][0])}")
-        except Exception as e:
-            print(f"Exception in find movement: {e}")"""
+        #else if there isnt't a movement index
+        else:
+            movementIndex = index_through_similarity(inputString)
 
-        step += 1
+            if(movementIndex != None):
+                step += 1
+    except Exception as e:
+        print(f"issue line find movement: {e}")
+        print(f"movement index: {movementIndex}| step: {step}")
             
             
 
 def index_through_similarity(inputString):
     global dataLibrary
+    try:
+        maxLikeness = 0
+        index = None
+        #compare all data with library data
+        for i in range(len(dataLibrary)):
+            #find similarity
+            
+            similarityVal = similarity(inputString, str(dataLibrary[i][0]))
 
-    maxLikeness = 0
-    index = None
-    #compare all data with library data
-    for i in range(len(dataLibrary)):
-        #find similarity
+            if  similarityVal > start_threshold:
+
+                #if its greater than the likeness then add the index
+                if similarityVal > maxLikeness:
+                    index = i
         
-        similarityVal = similarity(inputString, str(dataLibrary[i][0]))
-
-        if  similarityVal > start_threshold:
-            print(similarityVal, i)
-            #if its greater than the likeness then add the index
-            if similarityVal > maxLikeness:
-                index = i
-    
-    return index
+        return index
+    except:
+        print("issue line index through similarity")
 
 """Return the similarity of two given strings in decimal """
 def similarity(given, compare):
@@ -101,7 +103,8 @@ def similarity(given, compare):
     return (same/total)
 
 def initialize():
-    global dataLibrary
+    global dataLibrary, step
+    print(step)
     print("loading data...")
     try:
         with open("./data.csv", 'r') as f:

@@ -75,10 +75,6 @@ def findPositions(data, givenLibrary = None):
             elif data[i][2] < previous_frame_data[i][2] and abs(data[i][2]-previous_frame_data[i][2]) > momementBuffer:
                 positionalArray.append(0)
                 positionalArray.append(1)    
-            
-        """if abs(data[8][2]-previous_frame_data[8][2]) > momementBuffer:
-            print(data[8][0])
-            print("movement")"""
     
 
 
