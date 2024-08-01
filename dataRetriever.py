@@ -9,32 +9,32 @@ dataLibrary = []
 
 def findMovement(inputString, optional_library = None):
     global movementIndex, step, dataLibrary
+
     try:
+
         #if there is a library given use it, else use the datalibrary
         if optional_library != None:
             dataLibrary = optional_library
         else:
             if dataLibrary == []:
                 initialize()
+        
             
-
+        
         #if there is a movement index 
         if movementIndex != None and step != 0:
-
-
+            
             similarity_of_movement = similarity(inputString, dataLibrary[movementIndex][step])
-
-            if similarity_of_movement > threshold and len(dataLibrary[movementIndex])-1 > step:
+            
+            if similarity_of_movement > threshold:
                 
-
-
-                if len(dataLibrary[movementIndex])-1 != step:
-
-                    step += 1
+                if len(dataLibrary[movementIndex])-2 != step:
+                    print(f'step:{step}')
+                    step = step + 1
+                    
                     
                 else:
-
-                    print(dataLibrary[movementIndex][step])
+                    print(f'{dataLibrary[movementIndex][step+1]}')
                     step = 0
                     movementIndex = None
             else:
@@ -46,10 +46,11 @@ def findMovement(inputString, optional_library = None):
             movementIndex = index_through_similarity(inputString)
 
             if(movementIndex != None):
-                step += 1
+                #print("found: " + str(movementIndex))
+                step = step + 1
     except Exception as e:
         print(f"issue line find movement: {e}")
-        print(f"movement index: {movementIndex}| step: {step}")
+        
             
             
 
@@ -103,8 +104,8 @@ def similarity(given, compare):
     return (same/total)
 
 def initialize():
-    global dataLibrary, step
-    print(step)
+    global dataLibrary
+
     print("loading data...")
     try:
         with open("./data.csv", 'r') as f:
