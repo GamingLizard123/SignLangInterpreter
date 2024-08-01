@@ -2,7 +2,7 @@ import csv
 
 movementIndex = None
 step = 0
-start_threshold = 0.935
+start_threshold = 0.945
 threshold = 0.8
 
 dataLibrary = []
