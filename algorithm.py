@@ -2,19 +2,24 @@ import keyboard
 import mediapipe as mp
 import csv
 import os
+import dataRetriever as dr
 
-threshold = 0.939
+previous_frame_data = []
+momementBuffer = 3
 dataFilename = './handData.csv'
+
+record_output_file = './output.txt'
+record = False
 
 handLibraryData = []
 
-def run(data):
-   
-   findPositions(data)
+"""input hand position data and optional list library for parsing, 
+    if none is given it will load from csv"""
 
-"""input hand position data and optional list library for parsing, if none is given it will load from csv"""
 def findPositions(data, givenLibrary = None):
-    global handLibraryData
+
+    global handLibraryData,previous_frame_data,record
+
     #check for library if not load
     if givenLibrary == None:
         initializeData()
@@ -41,18 +46,48 @@ def findPositions(data, givenLibrary = None):
                     positionalArray.append(1)
                 else:
                     positionalArray.append(0)
-    #if it is only one hand
-    if len(positionalArray) == 840:
-        #get handedness
-        if data[0][0] == 21:
-            #right hand
-            positionalArray.append(0)
-            positionalArray.append(1)
-        elif data[0][0] == 0:
-            #left hand
-            positionalArray.append(1)
-            positionalArray.append(0)
-        
+    
+    #if there is data for the previous frame 
+    if previous_frame_data != []:
+        for i in range(len(data)):
+            #if the movement is less than the movement buffer then its 00
+            if abs(data[i][1]-previous_frame_data[i][1]) < momementBuffer:
+                positionalArray.append(0)
+                positionalArray.append(0)
+            #if the x-coordinate is greater then 10
+            elif data[i][1] > previous_frame_data[i][1] and abs(data[i][1]-previous_frame_data[i][1]) > momementBuffer:
+                positionalArray.append(1)
+                positionalArray.append(0)
+            #if position is less then 01
+            elif data[i][1] < previous_frame_data[i][1] and abs(data[i][1]-previous_frame_data[i][1]) > momementBuffer:
+                positionalArray.append(0)
+                positionalArray.append(1) 
+
+             #if the movement is less than the movement buffer then its 00
+            if abs(data[i][2]-previous_frame_data[i][2]) < momementBuffer:
+                positionalArray.append(0)
+                positionalArray.append(0)
+            #if the y-coordinate is greater then 10
+            elif data[i][2] > previous_frame_data[i][2] and abs(data[i][2]-previous_frame_data[i][2]) > momementBuffer:
+                positionalArray.append(1)
+                positionalArray.append(0)
+            #if position is less then 01
+            elif data[i][2] < previous_frame_data[i][2] and abs(data[i][2]-previous_frame_data[i][2]) > momementBuffer:
+                positionalArray.append(0)
+                positionalArray.append(1)    
+    
+
+
+    #get handedness
+    if data[0][0] == 21:
+        #right hand
+        positionalArray.append(0)
+        positionalArray.append(1)
+    elif data[0][0] == 0:
+        #left hand
+        positionalArray.append(1)
+        positionalArray.append(0)
+    
                 
 
     string = ''.join(str(i) for i in positionalArray)
@@ -60,30 +95,25 @@ def findPositions(data, givenLibrary = None):
     #print(string, end="\n\n")
     
     
-    maxLikeness = 0
-    index = None
-    #compare all data with library data
-    for i in range(len(handLibraryData)):
-        #find similarity
-        
-        similarityVal = similarity(string, str(handLibraryData[i][1]))
-        #print(f"comparing with {handLibraryData[i][0]} similarity: {similarityVal}")
-        
-        if  similarityVal > threshold:
-            #if its greater than the likeness then add the index
-            if similarityVal > maxLikeness:
-                index = i
-    #return/print the name of the index if it exists
+    #replace frame data
+    previous_frame_data = data
     
-    if index != None:
-        os.system('cls')
-        print(handLibraryData[index][0])
-        return handLibraryData[index][0]
-    else:
-        
-        os.system('cls')
-        print("No match")
-        return None
+    
+    if keyboard.is_pressed ('r') and record == False:
+        print('recording- true')
+        record = True
+    elif keyboard.is_pressed('r') and record == True:
+        print('recording- false')
+        record = False
+
+    if record == True:
+        print('recorded')
+        record_string(string)
+
+    #find movement
+    dr.findMovement(string)
+    
+   
         
 
 
@@ -92,14 +122,7 @@ def initializeData(with_return = False):
     
     #read through csv and put it in a list
     try:
-        with open(dataFilename, 'r') as f:
-            csv_reader = csv.reader(f)
-            #iterate through every row
-            print("loading data...")
-            for row in csv_reader:
-                handLibraryData.append(row)
-            print('data loaded')
-        handLibraryData.pop(0)
+        dr.initialize()
     except:
         print("failed to load data")
         exit()
@@ -107,31 +130,10 @@ def initializeData(with_return = False):
         if with_return:
             return handLibraryData
 
-"""Return the similarity of two given strings in decimal """
-def similarity(given, compare):
-    #total
-    total = len(given)
-    
-    
-    same = 0
+def record_string(string):
+    string += ','
     try:
-        
-        #print(len(given), len(compare))
-        #if they are not of the same length terminate
-        #if they are not the same hand terminate
-        if(total != len(compare)):
-            return -1
-        
-        if given[total - 2] != compare[total - 2]:
-            return -1
-    except:
-        print('error with similarity input variables')
-        exit()
-    
-    #compare and add to same counter
-    for i in range(len(given)):
-        if given[i] == compare[i]:
-            same += 1
-    
-    #calculate percentage similarity and return
-    return (same/total)
+        with open(record_output_file, "a") as f:
+            f.write(string)
+    except Exception as e:
+        print(e)
