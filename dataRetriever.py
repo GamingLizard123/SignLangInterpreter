@@ -37,6 +37,7 @@ def findMovement(inputString, optional_library = None):
                     print(f'{dataLibrary[movementIndex][step+1]}')
                     step = 0
                     movementIndex = None
+                    return dataLibrary[movementIndex][step+1]
             else:
                 step = 0
                 movementIndex = None
@@ -49,9 +50,7 @@ def findMovement(inputString, optional_library = None):
                 #print("found: " + str(movementIndex))
                 step = step + 1
     except Exception as e:
-        print(f"issue line find movement: {e}")
-        
-            
+        print(f"issue line find movement: {e}")  
             
 
 def index_through_similarity(inputString):
